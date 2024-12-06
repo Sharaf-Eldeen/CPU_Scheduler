@@ -1,0 +1,24 @@
+{
+  "modules": [
+    {
+      "name": "CPU Schedulers Simulator",
+      "path": "d:\\University\\Third Level\\OS\\Assigments\\Java_Projects\\CPU Schedulers Simulator\\",
+      "sources": [
+        "d:\\University\\Third Level\\OS\\Assigments\\Java_Projects\\CPU Schedulers Simulator\\GUI\\Algo.java",
+        "d:\\University\\Third Level\\OS\\Assigments\\Java_Projects\\CPU Schedulers Simulator\\GUI\\CPUSchedulerGUI.java",
+        "d:\\University\\Third Level\\OS\\Assigments\\Java_Projects\\CPU Schedulers Simulator\\GUI\\CPUSchedulersTechniques.java",
+        "d:\\University\\Third Level\\OS\\Assigments\\Java_Projects\\CPU Schedulers Simulator\\GUI\\FCAIProcess.java",
+        "d:\\University\\Third Level\\OS\\Assigments\\Java_Projects\\CPU Schedulers Simulator\\GUI\\FCAIScheduler.java",
+        "d:\\University\\Third Level\\OS\\Assigments\\Java_Projects\\CPU Schedulers Simulator\\GUI\\PriorityScheduler.java",
+        "d:\\University\\Third Level\\OS\\Assigments\\Java_Projects\\CPU Schedulers Simulator\\GUI\\Process.java",
+        "d:\\University\\Third Level\\OS\\Assigments\\Java_Projects\\CPU Schedulers Simulator\\GUI\\SJFScheduler.java",
+        "d:\\University\\Third Level\\OS\\Assigments\\Java_Projects\\CPU Schedulers Simulator\\GUI\\SRTFScheduler.java"
+      ],
+      "testSources": [],
+      "generatedSources": [],
+      "classpath": [
+        "D:\\University\\Third Level\\OS\\Assigments\\Java_Projects\\CPU Schedulers Simulator\\bin"
+      ]
+    }
+  ]
+}

@@ -6,6 +6,12 @@ public class Process {
     public int priority;
     public int timeQuantum;
     public int contextSwitching;
+    public int completionTime; 
+    public int turnaroundTime; 
+    public int waitingTime; 
+    public int waitTimeForBoost; 
+    public int remainingBurstTime;
+
 
     public Process(String name, String color, int arrivalTime, int burstTime, int priority, int timeQuantum, int contextSwitching) {
         this.name = name;
