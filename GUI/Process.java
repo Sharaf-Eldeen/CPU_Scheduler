@@ -11,6 +11,7 @@ public class Process {
     public int waitingTime; 
     public int waitTimeForBoost; 
     public int remainingBurstTime;
+    public int startTime;
 
 
     public Process(String name, String color, int arrivalTime, int burstTime, int priority, int timeQuantum, int contextSwitching) {
