@@ -137,10 +137,12 @@ public class CPUSchedulerGUI {
 
 private void showGraphicalRepresentation(Object[][] output) {
     JFrame graphFrame = new JFrame("Graphical Representation");
-    graphFrame.setSize(900, 500);
+    graphFrame.setSize(900, 600);
     graphFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+    graphFrame.setLayout(new BorderLayout());
 
-    JPanel panel = new JPanel() {
+    // Panel for Gantt chart
+    JPanel chartPanel = new JPanel() {
         @Override
         protected void paintComponent(Graphics g) {
             super.paintComponent(g);
@@ -187,10 +189,53 @@ private void showGraphicalRepresentation(Object[][] output) {
         }
     };
 
-    graphFrame.add(panel);
+    // Add chart panel
+    graphFrame.add(chartPanel, BorderLayout.CENTER);
+
+    // Panel for scheduling details
+    JPanel detailsPanel = new JPanel();
+    detailsPanel.setLayout(new BoxLayout(detailsPanel, BoxLayout.Y_AXIS));
+
+    // Calculate and display waiting times and turnaround times
+    int totalWaitingTime = 0;
+    int totalTurnaroundTime = 0;
+    int n = output.length;
+
+    StringBuilder detailsText = new StringBuilder("<html><table border='1'><tr><th>Process</th><th>Waiting Time</th><th>Turnaround Time</th></tr>");
+    for (Object[] process : output) {
+        String processName = (String) process[0];
+        int arrivalTime = (int) process[1];
+        int completionTime = (int) process[2];
+        int burstTime = completionTime - arrivalTime;
+        int turnaroundTime = completionTime - arrivalTime;
+        int waitingTime = turnaroundTime - burstTime;
+
+        totalWaitingTime += waitingTime;
+        totalTurnaroundTime += turnaroundTime;
+
+        detailsText.append("<tr>")
+                   .append("<td>").append(processName).append("</td>")
+                   .append("<td>").append(waitingTime).append("</td>")
+                   .append("<td>").append(turnaroundTime).append("</td>")
+                   .append("</tr>");
+    }
+    detailsText.append("</table><br>");
+
+    // Calculate averages
+    double avgWaitingTime = (double) totalWaitingTime / n;
+    double avgTurnaroundTime = (double) totalTurnaroundTime / n;
+
+    detailsText.append("Average Waiting Time: ").append(avgWaitingTime).append("<br>");
+    detailsText.append("Average Turnaround Time: ").append(avgTurnaroundTime).append("<br>");
+    detailsText.append("</html>");
+
+    JLabel detailsLabel = new JLabel(detailsText.toString());
+    detailsPanel.add(detailsLabel);
+
+    // Add details panel
+    graphFrame.add(detailsPanel, BorderLayout.SOUTH);
+
     graphFrame.setVisible(true);
 }
-
-    
     
 }
