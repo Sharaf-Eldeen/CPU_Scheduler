@@ -58,16 +58,16 @@ public class SRTFScheduler implements CPUSchedulersTechniques {
             // Execute the process for one unit of time
             currentProcess.remainingBurstTime--;
 
-            // If the process finishes execution
+          
             if (currentProcess.remainingBurstTime == 0) {
-                currentProcess.completionTime = currentTime + 1; // Completion time is 1-based
+                currentProcess.completionTime = currentTime + 1; 
                 completedProcesses++;
 
                 // Calculate metrics
                 int turnaroundTime = currentProcess.completionTime - currentProcess.arrivalTime;
                 int waitingTime = turnaroundTime - currentProcess.burstTime;
 
-                // Record result for this process
+             
                 int index = processes.indexOf(currentProcess);
                 result[index][0] = currentProcess.name;
                 result[index][1] = currentProcess.startTime;
@@ -76,28 +76,13 @@ public class SRTFScheduler implements CPUSchedulersTechniques {
                 result[index][4] = waitingTime;
                 result[index][5] = turnaroundTime;
 
-                // Store WT and TAT in the process for averaging later
-                currentProcess.waitingTime = waitingTime;
-                currentProcess.turnaroundTime = turnaroundTime;
             }
 
-            // Increment the current time
+          
             currentTime++;
         }
 
-        // Calculate averages
-        double totalWT = 0, totalTAT = 0;
-        for (Process p : processes) {
-            totalWT += p.waitingTime;
-            totalTAT += p.turnaroundTime;
-        }
-
-        double avgWT = totalWT / n;
-        double avgTAT = totalTAT / n;
-
-        // Add averages to the result
-        result[n - 1][6] = avgWT;
-        result[n - 1][7] = avgTAT;
+      
 
         return result;
     }
