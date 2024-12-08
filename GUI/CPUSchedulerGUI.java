@@ -114,10 +114,19 @@ public class CPUSchedulerGUI {
     //CHANGE WITH YOUR FUNCTION HERE Determine which scheduling algorithm to use
     Object[][] result;
     CPUSchedulersTechniques context;
-  if (srtfButton.isSelected()) {
+    if (priorityButton.isSelected()) {
+        context = new PriorityScheduler();
+        result = context.run(processes);
+    } else if (sjfButton.isSelected()) {
+        context = new SJFScheduler();
+        result = context.run(processes);
+    } else if (srtfButton.isSelected()) {
         context = new SRTFScheduler();
         result = context.run(processes);
-    }  else {
+    } else if (fcaiButton.isSelected()) {
+        context = new FCAIScheduler();
+        result = context.run(processes);
+    } else {
         JOptionPane.showMessageDialog(null, "Please select a scheduling algorithm.", "Error", JOptionPane.ERROR_MESSAGE);
         return;
     }
