@@ -114,19 +114,10 @@ public class CPUSchedulerGUI {
     //CHANGE WITH YOUR FUNCTION HERE Determine which scheduling algorithm to use
     Object[][] result;
     CPUSchedulersTechniques context;
-    if (priorityButton.isSelected()) {
-        context = new PriorityScheduler();
-        result = context.run(processes);
-    } else if (sjfButton.isSelected()) {
-        context = new SJFScheduler();
-        result = context.run(processes);
-    } else if (srtfButton.isSelected()) {
+  if (srtfButton.isSelected()) {
         context = new SRTFScheduler();
         result = context.run(processes);
-    } else if (fcaiButton.isSelected()) {
-        context = new FCAIScheduler();
-        result = context.run(processes);
-    } else {
+    }  else {
         JOptionPane.showMessageDialog(null, "Please select a scheduling algorithm.", "Error", JOptionPane.ERROR_MESSAGE);
         return;
     }
@@ -196,19 +187,16 @@ private void showGraphicalRepresentation(Object[][] output) {
     JPanel detailsPanel = new JPanel();
     detailsPanel.setLayout(new BoxLayout(detailsPanel, BoxLayout.Y_AXIS));
 
-    // Calculate and display waiting times and turnaround times
-    int totalWaitingTime = 0;
-    int totalTurnaroundTime = 0;
+    // Display waiting times and turnaround times from output
+    double totalWaitingTime = 0;
+    double totalTurnaroundTime = 0;
     int n = output.length;
 
     StringBuilder detailsText = new StringBuilder("<html><table border='1'><tr><th>Process</th><th>Waiting Time</th><th>Turnaround Time</th></tr>");
     for (Object[] process : output) {
         String processName = (String) process[0];
-        int arrivalTime = (int) process[1];
-        int completionTime = (int) process[2];
-        int burstTime = completionTime - arrivalTime;
-        int turnaroundTime = completionTime - arrivalTime;
-        int waitingTime = turnaroundTime - burstTime;
+        int waitingTime = (int) process[4];       // Precomputed WT from result
+        int turnaroundTime = (int) process[5];   // Precomputed TAT from result
 
         totalWaitingTime += waitingTime;
         totalTurnaroundTime += turnaroundTime;
@@ -222,8 +210,8 @@ private void showGraphicalRepresentation(Object[][] output) {
     detailsText.append("</table><br>");
 
     // Calculate averages
-    double avgWaitingTime = (double) totalWaitingTime / n;
-    double avgTurnaroundTime = (double) totalTurnaroundTime / n;
+    double avgWaitingTime = totalWaitingTime / n;
+    double avgTurnaroundTime = totalTurnaroundTime / n;
 
     detailsText.append("Average Waiting Time: ").append(avgWaitingTime).append("<br>");
     detailsText.append("Average Turnaround Time: ").append(avgTurnaroundTime).append("<br>");
@@ -237,5 +225,5 @@ private void showGraphicalRepresentation(Object[][] output) {
 
     graphFrame.setVisible(true);
 }
-    
+
 }
