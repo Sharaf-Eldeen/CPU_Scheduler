@@ -1,92 +1,124 @@
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.PriorityQueue;
+import java.util.*;
 
-public class FCAIScheduler implements CPUSchedulersTechniques {
+class Processfaci {
+    int pid;
+    int priority;
+    int arrivalTime;
+    int burstTime;
+    int remainingTime;
+    int quantum;
+    double fcaiFactor;
+    List<String> executionPeriods;
 
-    private void calculateFcaiFactorForAllProcesses(List<FCAIProcess> processes) {
-        int lastArrival = 0;
-        int maxBurstTime = 0;
-
-        for (FCAIProcess process : processes) {
-            if (process.arrivalTime > lastArrival) {
-                lastArrival = process.arrivalTime;
-            }
-            if (process.burstTime > maxBurstTime) {
-                maxBurstTime = process.burstTime;
-            }
-        }
-
-        double v1 = lastArrival / 10.0;
-        double v2 = maxBurstTime / 10.0;
-        for (FCAIProcess process : processes) {
-            process.calculateFcaiFactor(v1, v2);
-        }
+    public Processfaci(int pid, int priority, int arrivalTime, int burstTime, int quantum) {
+        this.pid = pid;
+        this.priority = priority;
+        this.arrivalTime = arrivalTime;
+        this.burstTime = burstTime;
+        this.remainingTime = burstTime;
+        this.quantum = quantum;
+        this.executionPeriods = new ArrayList<>();
     }
 
-    private void schedule(List<FCAIProcess> processes) {
+    public void calculateFCAIFactor(double V1, double V2) {
+        this.fcaiFactor = (10 - this.priority)
+                        + (this.arrivalTime / V1)
+                        + (this.remainingTime / V2);
+    }
+}
 
-        List<Object[]> logs = new ArrayList<>();
+ class fcaiScheduler {
 
-        PriorityQueue<FCAIProcess> Queue = new PriorityQueue<>(Comparator.comparingInt((FCAIProcess p) -> p.arrivalTime ).thenComparingInt((FCAIProcess p) -> p.fcaiFactor));
-        // PriorityQueue<FCAIProcess> fcaiFactorQueue = new PriorityQueue<>(Comparator.comparingInt((FCAIProcess p) -> p.fcaiFactor));
-        Queue.addAll(processes);
-        // fcaiFactorQueue.addAll(processes);
+    public static void fcaiScheduler(List<Processfaci> processList) {
+        int time = 0;
+        List<Processfaci> readyQueue = new ArrayList<>();
+        List<Processfaci> completedProcesses = new ArrayList<>();
 
-        int currantTime = 0;
-        while (!Queue.isEmpty()) {
-            FCAIProcess turnProcess = Queue.poll();
+        int lastArrivalTime = processList.stream().mapToInt(p -> p.arrivalTime).max().orElse(1);
+        int maxBurstTime = processList.stream().mapToInt(p -> p.burstTime).max().orElse(1);
+        double V1 = lastArrivalTime / 10.0;
+        double V2 = maxBurstTime / 10.0;
 
-            if(turnProcess.arrivalTime > currantTime) {
-                currantTime = turnProcess.arrivalTime;
-            }
+        for (Processfaci process : readyQueue) {
+            process.calculateFCAIFactor(V1, V2);
+        }
 
-            int firstFortyPercent = (int) Math.ceil(.4 * turnProcess.timeQuantum); 
-            int actualTimeNonPreemptive = Math.min(firstFortyPercent, turnProcess.burstTime);
-            int actualTurnProcessRemainingTime = turnProcess.burstTime - actualTimeNonPreemptive;
-            currantTime += actualTimeNonPreemptive;
 
-            logs.add(new Object[]{turnProcess.name,
-                currantTime - actualTimeNonPreemptive,
-                currantTime,
-                turnProcess.color});
 
-            if(actualTurnProcessRemainingTime > 0) {
-                turnProcess.canBePreempted = true;
-                turnProcess.burstTime = actualTurnProcessRemainingTime;
-                turnProcess.arrivalTime = currantTime;
-                Queue.add(turnProcess);
-                FCAIProcess next = Queue.peek();
-                if(turnProcess.name != next.name) {
-                    turnProcess.setTimeQuantum(actualTurnProcessRemainingTime);
 
-                } else {
 
+
+
+        while (!processList.isEmpty() || !readyQueue.isEmpty()) {
+            Iterator<Processfaci> it = processList.iterator();
+            while (it.hasNext()) {
+                Processfaci process = it.next();
+                if (process.arrivalTime <= time) {
+                    System.out.println(time);
+                    System.out.println(process.pid);
+                    System.out.println("----------------------------------------");
+                    readyQueue.add(process);
+                    it.remove();
                 }
             }
+
+
+            readyQueue.sort(Comparator.comparingDouble(p -> p.fcaiFactor));
+
+            if (!readyQueue.isEmpty()) {
+                Processfaci currentProcess = readyQueue.remove(0);
+                int initialQuantum = currentProcess.quantum;
+                int nonPreemptiveTime = (int) Math.ceil(initialQuantum * 0.4);
+                int executionTime;
+
+                if (currentProcess.remainingTime > nonPreemptiveTime) {
+                    executionTime = nonPreemptiveTime;
+                    currentProcess.executionPeriods.add("[" + time + "-" + (time + executionTime) + "]");
+                    time += executionTime;
+                    currentProcess.remainingTime -= executionTime;
+
+                    if (currentProcess.remainingTime > 0) {
+                        executionTime = Math.min(currentProcess.remainingTime, currentProcess.quantum - nonPreemptiveTime);
+                        currentProcess.executionPeriods.add("[" + time + "-" + (time + executionTime) + "]");
+                        time += executionTime;
+                        currentProcess.remainingTime -= executionTime;
+                    }
+                } else {
+                    executionTime = Math.min(currentProcess.remainingTime, currentProcess.quantum);
+                    currentProcess.executionPeriods.add("[" + time + "-" + (time + executionTime) + "]");
+                    time += executionTime;
+                    currentProcess.remainingTime -= executionTime;
+                }
+
+                if (currentProcess.remainingTime > 0) {
+                    if (executionTime == initialQuantum) {
+                        currentProcess.quantum += 2; 
+                    } else {
+                        currentProcess.quantum += initialQuantum - executionTime; 
+                    }
+                    readyQueue.add(currentProcess); 
+                } else {
+                    completedProcesses.add(currentProcess); 
+                }
+            } else {
+                time++;
+            }
         }
 
-
-
+        System.out.println("Execution Order:");
+        for (Processfaci process : completedProcesses) {
+            System.out.println("Process " + process.pid + ": " + process.executionPeriods);
+        }
     }
 
-    @Override
-    public Object[][] run(List<Process> processes) {
+    public static void main(String[] args) {
+        List<Processfaci> processes = new ArrayList<>(Arrays.asList(
+            new Processfaci(1, 4, 0, 17, 4),
+            new Processfaci(2, 9, 3, 6, 3),  
+            new Processfaci(3, 3, 4, 10, 5),
+            new Processfaci(4, 10, 29, 4, 2)
+        ));
 
-        List<FCAIProcess> fcaiProcesses = processes.stream()
-            .filter(FCAIProcess.class::isInstance)
-            .map(FCAIProcess.class::cast)
-            .toList();
-
-        calculateFcaiFactorForAllProcesses(fcaiProcesses);
-
-        schedule(fcaiProcesses);
-
-        
-
-        // Placeholder: Add scheduling logic here
-        return new Object[0][0];
+        fcaiScheduler(processes);
     }
-
 }
