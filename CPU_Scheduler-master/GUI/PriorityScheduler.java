@@ -9,6 +9,7 @@ public class PriorityScheduler implements CPUSchedulersTechniques {
         // Sort processes by arrival time
         processes.sort(Comparator.comparingInt(p -> p.arrivalTime));
         int currentTime = 0;
+        Process previousProcess = null; // Track the previously executed process
 
         while (!processes.isEmpty()) {
             // Get all processes that have arrived by the current time
@@ -32,6 +33,11 @@ public class PriorityScheduler implements CPUSchedulersTechniques {
             // Pick the process with the highest priority (lowest priority number)
             Process nextProcess = availableProcesses.get(0);
 
+            // Handle context switching if the process has changed
+            if (previousProcess != null && nextProcess != previousProcess) {
+                currentTime += previousProcess.contextSwitching; // Add context switch time
+            }
+
             // Calculate times for the selected process
             if (nextProcess.startTime == 0) { // Set start time if not already set
                 nextProcess.startTime = currentTime;
@@ -44,6 +50,9 @@ public class PriorityScheduler implements CPUSchedulersTechniques {
             currentTime += nextProcess.burstTime;
             finishedProcesses.add(nextProcess);
             processes.remove(nextProcess);
+
+            // Update the previous process
+            previousProcess = nextProcess;
         }
 
         // Prepare results in Object[][] format
@@ -60,25 +69,4 @@ public class PriorityScheduler implements CPUSchedulersTechniques {
 
         return result;
     }
-
-    // public static void main(String[] args) {
-    //     PriorityScheduler scheduler = new PriorityScheduler();
-
-    //     // Create processes
-    //     List<Process> processes = new ArrayList<>();
-    //     processes.add(new Process("P1", "Red", 0, 7, 2, 0, 0));
-    //     processes.add(new Process("P2", "Green", 2, 4, 1, 0, 0));
-    //     processes.add(new Process("P3", "Blue", 4, 1, 3, 0, 0));
-    //     processes.add(new Process("P4", "Yellow", 5, 4, 2, 0, 0));
-
-    //     // Run the scheduler
-    //     Object[][] results = scheduler.run(processes);
-
-    //     // Print results
-    //     System.out.println("Name\tStart\tCompletion\tColor\tWaiting\tTurnaround");
-    //     for (Object[] row : results) {
-    //         System.out.printf("%s\t%d\t%d\t%s\t%d\t%d\n",
-    //                 row[0], row[1], row[2], row[3], row[4], row[5]);
-    //     }
-    // }
 }

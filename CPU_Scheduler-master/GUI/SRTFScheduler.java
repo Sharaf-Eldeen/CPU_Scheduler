@@ -8,6 +8,7 @@ public class SRTFScheduler implements CPUSchedulersTechniques {
     public Object[][] run(List<Process> processes) {
         int n = processes.size();
         int currentTime = 0;
+        Process previousProcess = null; // Track the previously executed process
 
         // Sort processes by arrival time
         processes.sort(Comparator.comparingInt(p -> p.arrivalTime));
@@ -50,6 +51,11 @@ public class SRTFScheduler implements CPUSchedulersTechniques {
             // Select the process with the shortest remaining time
             Process currentProcess = readyQueue.poll();
 
+            // Handle context switching if the process has changed
+            if (previousProcess != null && currentProcess != previousProcess) {
+                currentTime += previousProcess.contextSwitching; // Use contextSwitchTime from the Process class
+            }
+
             // Mark the start time if not already started
             if (currentProcess.startTime == -1) {
                 currentProcess.startTime = currentTime;
@@ -58,16 +64,14 @@ public class SRTFScheduler implements CPUSchedulersTechniques {
             // Execute the process for one unit of time
             currentProcess.remainingBurstTime--;
 
-          
             if (currentProcess.remainingBurstTime == 0) {
-                currentProcess.completionTime = currentTime + 1; 
+                currentProcess.completionTime = currentTime + 1;
                 completedProcesses++;
 
                 // Calculate metrics
                 int turnaroundTime = currentProcess.completionTime - currentProcess.arrivalTime;
                 int waitingTime = turnaroundTime - currentProcess.burstTime;
 
-             
                 int index = processes.indexOf(currentProcess);
                 result[index][0] = currentProcess.name;
                 result[index][1] = currentProcess.startTime;
@@ -75,14 +79,12 @@ public class SRTFScheduler implements CPUSchedulersTechniques {
                 result[index][3] = currentProcess.color;
                 result[index][4] = waitingTime;
                 result[index][5] = turnaroundTime;
-
             }
 
-          
+            // Update previous process and increment time
+            previousProcess = currentProcess;
             currentTime++;
         }
-
-      
 
         return result;
     }

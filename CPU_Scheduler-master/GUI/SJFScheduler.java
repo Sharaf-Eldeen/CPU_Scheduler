@@ -1,6 +1,7 @@
 import java.util.*;
 
 public class SJFScheduler implements CPUSchedulersTechniques {
+
     @Override
     public Object[][] run(List<Process> processes) {
         List<Process> finishedProcesses = new ArrayList<>();
@@ -9,6 +10,7 @@ public class SJFScheduler implements CPUSchedulersTechniques {
         processes.sort(Comparator.comparingInt(p -> p.arrivalTime));
 
         int currentTime = 0;
+        Process previousProcess = null; // Track the previously executed process
 
         while (!processes.isEmpty()) {
             // Filter processes that have arrived
@@ -25,11 +27,16 @@ public class SJFScheduler implements CPUSchedulersTechniques {
                 continue;
             }
 
-            // Sort ready queue by burst time, then by priority
+            // Sort ready queue by burst time
             readyQueue.sort(Comparator.comparingInt(p -> p.burstTime));
 
             // Select the next process
             Process nextProcess = readyQueue.get(0);
+
+            // Handle context switching if the process has changed
+            if (previousProcess != null && nextProcess != previousProcess) {
+                currentTime += previousProcess.contextSwitching; // Add context switch time
+            }
 
             // Calculate start time, completion time, and other metrics
             if (nextProcess.startTime == 0) { // Set start time if not already set
@@ -44,41 +51,23 @@ public class SJFScheduler implements CPUSchedulersTechniques {
             currentTime += nextProcess.burstTime;
             finishedProcesses.add(nextProcess);
             processes.remove(nextProcess);
+
+            // Update the previous process
+            previousProcess = nextProcess;
         }
 
         // Prepare results in Object[][] format
         Object[][] result = new Object[finishedProcesses.size()][8];
         for (int i = 0; i < finishedProcesses.size(); i++) {
             Process p = finishedProcesses.get(i);
-            result[i][0] = p.name;  
-            result[i][1] = p.startTime;
-            result[i][2] = p.completionTime;       // Completion Time    
-            result[i][3] = p.color;    
-            result[i][4] = p.waitingTime;       // Completion Time
-            result[i][5] = p.turnaroundTime;       // Turnaround Time
+            result[i][0] = p.name;  // Process name
+            result[i][1] = p.startTime; // Start time
+            result[i][2] = p.completionTime; // Completion time
+            result[i][3] = p.color; // Process color
+            result[i][4] = p.waitingTime; // Waiting time
+            result[i][5] = p.turnaroundTime; // Turnaround time
         }
 
         return result;
     }
-
-//     public static void main(String[] args) {
-//         SJFScheduler scheduler = new SJFScheduler();
-
-//         // Create processes
-//         List<Process> processes = new ArrayList<>();
-//         processes.add(new Process("P1", "Red", 0, 7, 1, 0, 0));
-//         processes.add(new Process("P2", "Green", 0, 4, 2, 0, 0));
-      
-//         // Run the scheduler
-//         Object[][] results = scheduler.run(processes);
-
-//         // Print results
-//      //   System.out.println("Name\tColor\tArrival\tStart\tCompletion\tTurnaround\tWaiting\tPriority");
-//       //  for (Object[] row : results) {
-//    //         System.out.printf("%s\t%s\t%d\t%d\t%d\t%d\t%d\t%d\n",
-//  //                   row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]);
-//  //       }
-//  System.out.println(results);
- 
-//     }
 }

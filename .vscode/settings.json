@@ -1,5 +1,5 @@
 {
-  "java.project.sourcePaths": ["src", "GUI"],
+  "java.project.sourcePaths": ["CPU_Scheduler-master/GUI"],
   "java.project.outputPath": "bin",
   "java.project.referencedLibraries": ["lib/**/*.jar"]
 }
