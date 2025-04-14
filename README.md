@@ -1,18 +1,31 @@
-## Getting Started
+# 🖥️ CPU Scheduling Algorithms Simulator
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+[![Java](https://img.shields.io/badge/Java-17-%23ED8B00?logo=openjdk)](https://java.com)
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-## Folder Structure
+A visual simulator demonstrating five core CPU scheduling algorithms with comparative analytics.
 
-The workspace contains two folders by default, where:
+<img src="./screenshots/demo.gif" width="600" alt="Algorithm Visualization Demo">
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+## 📌 Features
+- **5 Algorithm Implementations**:
+  - First-Come-First-Served (FCFS)
+  - Shortest-Job-First (SJF)
+  - Priority Scheduling
+  - Round Robin (RR)
+  - Multilevel Queue
+- **GUI Visualization** of process execution timelines
+- **Performance Metrics**: Average wait time, turnaround time
+- **Educational Mode**: Step-by-step execution explanation
+  
+## 📊 Sample Output
+Algorithm    | Avg Wait Time | Avg Turnaround Time
+-------------|---------------|--------------------
+FCFS         | 5.2s          | 8.7s
+Round Robin  | 3.1s          | 6.4s
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
-
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+## 🛠️ Tech Stack
+ - Java 17
+ - Java Swing(GUI)
+ - Object-Oriented Design
+  
